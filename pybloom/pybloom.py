@@ -45,11 +45,12 @@ except ImportError:
     raise ImportError('pybloom requires bitarray >= 0.3.4')
 
 __version__ = '2.0'
-__author__  = "Jay Baird <jay.baird@me.com>, Bob Ippolito <bob@redivi.com>,\
+__author__ = "Jay Baird <jay.baird@me.com>, Bob Ippolito <bob@redivi.com>,\
                Marius Eriksen <marius@monkey.org>,\
                Alex Brasetvik <alex@brasetvik.com>,\
                Matt Bachmann <bachmann.matt@gmail.com>,\
               "
+
 
 def make_hashfuncs(num_slices, num_bits):
     if num_bits >= (1 << 31):
@@ -73,7 +74,11 @@ def make_hashfuncs(num_slices, num_bits):
     num_salts, extra = divmod(num_slices, len(fmt))
     if extra:
         num_salts += 1
-    salts = tuple(hashfn(hashfn(pack('I', i)).digest()) for i in range_fn(num_salts))
+    salts = tuple(
+        hashfn(hashfn(pack('I', i)).digest())
+        for i in range_fn(num_salts)
+    )
+
     def _make_hashfuncs(key):
         if running_python_3:
             if isinstance(key, str):
@@ -217,7 +222,7 @@ class BloomFilter(object):
         """ Calculates the union of the two underlying bitarrays and returns
         a new bloom filter object."""
         if self.capacity != other.capacity or \
-            self.error_rate != other.error_rate:
+           self.error_rate != other.error_rate:
             raise ValueError("Unioning filters requires both filters to have \
 both the same capacity and error rate")
         new_bloom = self.copy()
@@ -231,7 +236,7 @@ both the same capacity and error rate")
         """ Calculates the intersection of the two underlying bitarrays and returns
         a new bloom filter object."""
         if self.capacity != other.capacity or \
-            self.error_rate != other.error_rate:
+           self.error_rate != other.error_rate:
             raise ValueError("Intersecting filters requires both filters to \
 have equal capacity and error rate")
         new_bloom = self.copy()
@@ -269,7 +274,7 @@ have equal capacity and error rate")
             (filter.bitarray.frombytes(f.read()) if is_string_io(f)
              else filter.bitarray.fromfile(f))
         if filter.num_bits != filter.bitarray.length() and \
-               (filter.num_bits + (8 - filter.num_bits % 8)
+           (filter.num_bits + (8 - filter.num_bits % 8)
                 != filter.bitarray.length()):
             raise ValueError('Bit length mismatch!')
 
@@ -284,9 +289,10 @@ have equal capacity and error rate")
         self.__dict__.update(d)
         self.make_hashes = make_hashfuncs(self.num_slices, self.bits_per_slice)
 
+
 class ScalableBloomFilter(object):
-    SMALL_SET_GROWTH = 2 # slower, but takes up less memory
-    LARGE_SET_GROWTH = 4 # faster, but takes up more memory faster
+    SMALL_SET_GROWTH = 2  # slower, but takes up less memory
+    LARGE_SET_GROWTH = 4  # faster, but takes up more memory faster
     FILE_FMT = '<idQd'
 
     def __init__(self, initial_capacity=100, error_rate=0.001,
